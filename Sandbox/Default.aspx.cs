@@ -13,5 +13,27 @@ namespace Sandbox
         {
 
         }
+
+        protected void HideButton_OnClick(object sender, EventArgs e)
+        {
+            HideButton.Visible = false;
+            ShowButton.Visible = true;
+            ShowHidePanel.Visible = false;
+        }
+
+        protected void ShowButton_OnClick(object sender, EventArgs e)
+        {
+            HideButton.Visible = true;
+            ShowButton.Visible = false;
+            ShowHidePanel.Visible = true;
+        }
+
+        protected void TextToLinkButton_OnClick(object sender, EventArgs e)
+        {
+            if (LinkTextBox.Text.StartsWith("http://") || LinkTextBox.Text.StartsWith("https://"))
+                Link.NavigateUrl = LinkTextBox.Text;
+            else
+                Link.NavigateUrl = "http://" + LinkTextBox.Text;
+        }
     }
 }
