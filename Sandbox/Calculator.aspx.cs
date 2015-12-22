@@ -9,9 +9,20 @@ namespace Sandbox
 {
     public partial class Calculator : System.Web.UI.Page
     {
+        private bool IsAwaitingNextInput { get; set; }
+        private double CurrentTotal { get; set; }
+        private string CurrentOperation { get; set; }
+
         protected void Page_Load(object sender, EventArgs e)
         {
-
+            if (Session["IsAwaitingNextInput"] != null)
+                IsAwaitingNextInput = (bool)Session["IsAwaitingNextInput"];
+            if (Session["CurrentTotal"] != null)
+                CurrentTotal = (double)Session["CurrentTotal"];
+            if (Session["CurrentOperation"] != null)
+                CurrentOperation = (string)Session["CurrentOperation"];
+            else
+                CurrentOperation = "=";
         }
 
         protected void NumberClick(object sender, EventArgs e)
@@ -21,17 +32,19 @@ namespace Sandbox
         }
         private void InputNumber(string numberText)
         {
-            if (StateSaver.CurrentOperation == "=")
+            if (CurrentOperation == "=")
                 TextBoxHistory.Text = "";
-            if (StateSaver.IsAwaitingNextInput)
+            if (IsAwaitingNextInput)
             {
                 TextBoxInputResult.Text = "0";
-                StateSaver.IsAwaitingNextInput = false;
+                IsAwaitingNextInput = false;
             }
             if (TextBoxInputResult.Text == "0" && numberText != ",")
                 TextBoxInputResult.Text = numberText;
             else if (!(TextBoxInputResult.Text.Contains(",") && numberText == ","))
                 TextBoxInputResult.Text += numberText;
+
+            Session["IsAwaitingNextInput"] = IsAwaitingNextInput;
         }
 
         protected void OperationClick(object sender, EventArgs e)
@@ -41,54 +54,58 @@ namespace Sandbox
         }
         private void InputOperation(string newOperation)
         {
-            if (!StateSaver.IsAwaitingNextInput || StateSaver.CurrentOperation == "=")
+            if (!IsAwaitingNextInput || CurrentOperation == "=")
             {
                 double input = double.Parse(TextBoxInputResult.Text);
 
-                switch (StateSaver.CurrentOperation)
+                switch (CurrentOperation)
                 {
                     case "=":
                         TextBoxHistory.Text = "";
-                        StateSaver.CurrentTotal = input;
+                        CurrentTotal = input;
                         break;
                     case "+":
-                        StateSaver.CurrentTotal += input;
+                        CurrentTotal += input;
                         break;
                     case "-":
-                        StateSaver.CurrentTotal -= input;
+                        CurrentTotal -= input;
                         break;
                     case "x":
-                        StateSaver.CurrentTotal *= input;
+                        CurrentTotal *= input;
                         break;
                     case "/":
-                        StateSaver.CurrentTotal /= input;
+                        CurrentTotal /= input;
                         break;
                     default:
                         break;
                 }
                 TextBoxHistory.Text += TextBoxInputResult.Text;
                 AddOperationToHistory(newOperation);
-                var isBigNumber = StateSaver.CurrentTotal > 999999 || StateSaver.CurrentTotal < -999999;
-                var isSmallNumber = StateSaver.CurrentTotal < 0.0001 & StateSaver.CurrentTotal > -0.0001;
+                var isBigNumber = CurrentTotal > 999999 || CurrentTotal < -999999;
+                var isSmallNumber = CurrentTotal < 0.0001 & CurrentTotal > -0.0001;
                 if (isBigNumber || isSmallNumber)
-                    TextBoxInputResult.Text = $"{StateSaver.CurrentTotal:E7}";
+                    TextBoxInputResult.Text = $"{CurrentTotal:E7}";
                 else
-                    TextBoxInputResult.Text = StateSaver.CurrentTotal.ToString();
+                    TextBoxInputResult.Text = CurrentTotal.ToString();
 
-                StateSaver.IsAwaitingNextInput = true;
+                IsAwaitingNextInput = true;
             }
             else
             {
                 RemoveLastOperationFromHistory();
                 AddOperationToHistory(newOperation);
             }
-            StateSaver.CurrentOperation = newOperation;
+            CurrentOperation = newOperation;
+
+            Session["IsAwaitingNextInput"] = IsAwaitingNextInput;
+            Session["CurrentTotal"] = CurrentTotal;
+            Session["CurrentOperation"] = CurrentOperation;
         }
 
         private void RemoveLastOperationFromHistory()
         {
             TextBoxHistory.Text = TextBoxHistory.Text.Remove(TextBoxHistory.Text.Length - 3);
-            if ((StateSaver.CurrentOperation == "x" || StateSaver.CurrentOperation == "/") && TextBoxHistory.Text.Split(' ').Length > 1)
+            if ((CurrentOperation == "x" || CurrentOperation == "/") && TextBoxHistory.Text.Split(' ').Length > 1)
             {
                 TextBoxHistory.Text = TextBoxHistory.Text.Remove(TextBoxHistory.Text.Length - 1);
                 TextBoxHistory.Text = TextBoxHistory.Text.Remove(0, 1);
@@ -126,7 +143,9 @@ namespace Sandbox
         {
             TextBoxHistory.Text = "";
             TextBoxInputResult.Text = "0";
-            StateSaver.CurrentOperation = "=";
+            CurrentOperation = "=";
+
+            Session["CurrentOperation"] = CurrentOperation;
         }
 
         protected void PlusMinusClick(object sender, EventArgs e)
