@@ -1,28 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace Sandbox
 {
     public partial class Calculator : System.Web.UI.Page
     {
-        private bool IsAwaitingNextInput { get; set; }
-        private double CurrentTotal { get; set; }
-        private string CurrentOperation { get; set; }
+        private bool isAwaitingNextInput;
+        private double currentTotal;
+        private string currentOperation;
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["IsAwaitingNextInput"] != null)
-                IsAwaitingNextInput = (bool)Session["IsAwaitingNextInput"];
-            if (Session["CurrentTotal"] != null)
-                CurrentTotal = (double)Session["CurrentTotal"];
-            if (Session["CurrentOperation"] != null)
-                CurrentOperation = (string)Session["CurrentOperation"];
+            if (Session["isAwaitingNextInput"] != null)
+                isAwaitingNextInput = (bool)Session["isAwaitingNextInput"];
+            if (Session["currentTotal"] != null)
+                currentTotal = (double)Session["currentTotal"];
+            if (Session["currentOperation"] != null)
+                currentOperation = (string)Session["currentOperation"];
             else
-                CurrentOperation = "=";
+                currentOperation = "=";
         }
 
         protected void NumberClick(object sender, EventArgs e)
@@ -32,19 +28,19 @@ namespace Sandbox
         }
         private void InputNumber(string numberText)
         {
-            if (CurrentOperation == "=")
+            if (currentOperation == "=")
                 TextBoxHistory.Text = "";
-            if (IsAwaitingNextInput)
+            if (isAwaitingNextInput)
             {
                 TextBoxInputResult.Text = "0";
-                IsAwaitingNextInput = false;
+                isAwaitingNextInput = false;
             }
             if (TextBoxInputResult.Text == "0" && numberText != ",")
                 TextBoxInputResult.Text = numberText;
             else if (!(TextBoxInputResult.Text.Contains(",") && numberText == ","))
                 TextBoxInputResult.Text += numberText;
 
-            Session["IsAwaitingNextInput"] = IsAwaitingNextInput;
+            Session["isAwaitingNextInput"] = isAwaitingNextInput;
         }
 
         protected void OperationClick(object sender, EventArgs e)
@@ -54,58 +50,58 @@ namespace Sandbox
         }
         private void InputOperation(string newOperation)
         {
-            if (!IsAwaitingNextInput || CurrentOperation == "=")
+            if (!isAwaitingNextInput || currentOperation == "=")
             {
                 double input = double.Parse(TextBoxInputResult.Text);
 
-                switch (CurrentOperation)
+                switch (currentOperation)
                 {
                     case "=":
                         TextBoxHistory.Text = "";
-                        CurrentTotal = input;
+                        currentTotal = input;
                         break;
                     case "+":
-                        CurrentTotal += input;
+                        currentTotal += input;
                         break;
                     case "-":
-                        CurrentTotal -= input;
+                        currentTotal -= input;
                         break;
                     case "x":
-                        CurrentTotal *= input;
+                        currentTotal *= input;
                         break;
                     case "/":
-                        CurrentTotal /= input;
+                        currentTotal /= input;
                         break;
                     default:
                         break;
                 }
                 TextBoxHistory.Text += TextBoxInputResult.Text;
                 AddOperationToHistory(newOperation);
-                var isBigNumber = CurrentTotal > 999999 || CurrentTotal < -999999;
-                var isSmallNumber = CurrentTotal < 0.0001 & CurrentTotal > -0.0001;
+                var isBigNumber = currentTotal > 999999 || currentTotal < -999999;
+                var isSmallNumber = currentTotal < 0.0001 & currentTotal > -0.0001;
                 if (isBigNumber || isSmallNumber)
-                    TextBoxInputResult.Text = $"{CurrentTotal:E7}";
+                    TextBoxInputResult.Text = $"{currentTotal:E7}";
                 else
-                    TextBoxInputResult.Text = CurrentTotal.ToString();
+                    TextBoxInputResult.Text = currentTotal.ToString();
 
-                IsAwaitingNextInput = true;
+                isAwaitingNextInput = true;
             }
             else
             {
                 RemoveLastOperationFromHistory();
                 AddOperationToHistory(newOperation);
             }
-            CurrentOperation = newOperation;
+            currentOperation = newOperation;
 
-            Session["IsAwaitingNextInput"] = IsAwaitingNextInput;
-            Session["CurrentTotal"] = CurrentTotal;
-            Session["CurrentOperation"] = CurrentOperation;
+            Session["isAwaitingNextInput"] = isAwaitingNextInput;
+            Session["currentTotal"] = currentTotal;
+            Session["currentOperation"] = currentOperation;
         }
 
         private void RemoveLastOperationFromHistory()
         {
             TextBoxHistory.Text = TextBoxHistory.Text.Remove(TextBoxHistory.Text.Length - 3);
-            if ((CurrentOperation == "x" || CurrentOperation == "/") && TextBoxHistory.Text.Split(' ').Length > 1)
+            if ((currentOperation == "x" || currentOperation == "/") && TextBoxHistory.Text.Split(' ').Length > 1)
             {
                 TextBoxHistory.Text = TextBoxHistory.Text.Remove(TextBoxHistory.Text.Length - 1);
                 TextBoxHistory.Text = TextBoxHistory.Text.Remove(0, 1);
@@ -143,9 +139,9 @@ namespace Sandbox
         {
             TextBoxHistory.Text = "";
             TextBoxInputResult.Text = "0";
-            CurrentOperation = "=";
+            currentOperation = "=";
 
-            Session["CurrentOperation"] = CurrentOperation;
+            Session["currentOperation"] = currentOperation;
         }
 
         protected void PlusMinusClick(object sender, EventArgs e)
