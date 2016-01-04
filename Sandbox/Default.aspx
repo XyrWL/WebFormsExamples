@@ -9,15 +9,18 @@
 <body>
     <form id="form" runat="server">
         <div>
+            <asp:RequiredFieldValidator runat="server" ControlToValidate="LinkTextBox" ErrorMessage="Must type in text to generate a link." Display="Dynamic" EnableClientScript="False" ForeColor="Red"></asp:RequiredFieldValidator>
             <asp:Panel ID="ShowHidePanel" runat="server" GroupingText="Link generator">
                 <asp:Label ID="LinkLabel" runat="server" Text="Type an url:"></asp:Label>
                 <asp:TextBox ID="LinkTextBox" runat="server"></asp:TextBox>
-                <asp:Button ID="TextToLinkButton" runat="server" Text="->" OnClick="TextToLinkButton_OnClick" />
+                <asp:Button ID="TextToLinkButton" runat="server" Text=">" OnClick="TextToLinkButton_OnClick" />
                 <asp:HyperLink ID="Link" runat="server" Text="Go to URL"></asp:HyperLink>
             </asp:Panel>
+        </div>
+        <div>
             <asp:Button ID="HideButton" runat="server" Text="Hide" OnClick="HideButton_OnClick" />
             <asp:Button ID="ShowButton" runat="server" Text="Show" Visible="False" OnClick="ShowButton_OnClick" />
-             <asp:HyperLink ID="CalculatorLink" runat="server" Text="Go to Calculator" NavigateUrl="Calculator.aspx"></asp:HyperLink>
+            <asp:HyperLink ID="CalculatorLink" runat="server" Text="Go to Calculator" NavigateUrl="Calculator.aspx"></asp:HyperLink>
         </div>
     </form>
 </body>

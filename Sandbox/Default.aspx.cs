@@ -30,10 +30,13 @@ namespace Sandbox
 
         protected void TextToLinkButton_OnClick(object sender, EventArgs e)
         {
-            if (LinkTextBox.Text.StartsWith("http://") || LinkTextBox.Text.StartsWith("https://"))
-                Link.NavigateUrl = LinkTextBox.Text;
-            else
-                Link.NavigateUrl = "http://" + LinkTextBox.Text;
+            if (Page.IsValid)
+            {
+                if (LinkTextBox.Text.StartsWith("http://") || LinkTextBox.Text.StartsWith("https://"))
+                    Link.NavigateUrl = LinkTextBox.Text;
+                else
+                    Link.NavigateUrl = "http://" + LinkTextBox.Text;
+            }
         }
     }
 }
