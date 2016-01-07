@@ -30,28 +30,23 @@
             <asp:CustomValidator runat="server" ControlToValidate="TextBoxSubscription" Display="Dynamic" EnableClientScript="False" ForeColor="Red" ErrorMessage="Subscription length must be in periods of 3 months." OnServerValidate="SubscriptionCustomValidate"/>
         </div>
         <div>
-            <label>Username: </label>
-            <br />
+            <label>Username: </label><br />
             <asp:TextBox runat="server" ID="TextBoxUsername"></asp:TextBox>
         </div>
         <div>
-            <label>Password: </label>
-            <br />
+            <label>Password: </label><br />
             <asp:TextBox runat="server" ID="TextBoxPassword" TextMode="Password"></asp:TextBox>
         </div>
         <div>
-            <label>Repeat password: </label>
-            <br />
+            <label>Repeat password: </label><br />
             <asp:TextBox runat="server" ID="TextBoxRepeat" TextMode="Password"></asp:TextBox>
         </div>
         <div>
-            <label>Age: </label>
-            <br />
+            <label>Age: </label><br />
             <asp:TextBox runat="server" ID="TextBoxAge"></asp:TextBox>
         </div>
         <div>
-            <label>Subscription length (months): </label>
-            <br />
+            <label>Subscription length (months): </label><br />
             <asp:TextBox runat="server" ID="TextBoxSubscription"></asp:TextBox>
         </div>
         <div>
